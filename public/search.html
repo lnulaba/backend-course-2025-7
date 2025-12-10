@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пошук товарів - Lab 7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .stat-item {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-content {
+            padding: 20px;
+        }
+
+        .item-title {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .item-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .item-price {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .item-quantity {
+            background: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 8px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            color: #666;
+        }
+
+        .no-results-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .item-id {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .item-dates {
+            font-size: 11px;
+            color: #999;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-link">← Назад на головну</a>
+            
+            <h1>🔍 Пошук товарів</h1>
+            <p class="subtitle">Переглядайте та керуйте інвентарем</p>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Пошук товарів за назвою...">
+                <button onclick="searchItems()" class="btn">🔍 Шукати</button>
+                <button onclick="loadAllItems()" class="btn btn-secondary">📋 Всі товари</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    Знайдено: <span class="stat-number" id="itemCount">0</span>
+                </div>
+                <div class="stat-item">
+                    Загальна вартість: <span class="stat-number" id="totalValue">0</span> грн
+                </div>
+            </div>
+        </div>
+
+        <div id="itemsContainer" class="items-grid">
+            <div class="loading">⏳ Завантаження товарів...</div>
+        </div>
+    </div>
+
+    <script>
+        let allItems = [];
+
+        // Load items on page load
+        window.addEventListener('load', () => {
+            loadAllItems();
+        });
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchItems();
+            }
+        });
+
+        async function loadAllItems() {
+            try {
+                const response = await fetch('/inventory');
+                if (!response.ok) throw new Error('Failed to fetch items');
+                
+                allItems = await response.json();
+                displayItems(allItems);
+                updateStats(allItems);
+            } catch (error) {
+                showError('Помилка завантаження товарів: ' + error.message);
+            }
+        }
+
+        function searchItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                displayItems(allItems);
+                updateStats(allItems);
+                return;
+            }
+
+            const filtered = allItems.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) ||
+                (item.description && item.description.toLowerCase().includes(searchTerm))
+            );
+
+            displayItems(filtered);
+            updateStats(filtered);
+        }
+
+        function displayItems(items) {
+            const container = document.getElementById('itemsContainer');
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">📦</div>
+                        <h2>Товари не знайдено</h2>
+                        <p>Спробуйте інший запит або додайте нові товари</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <div class="item-image">
+                        ${item.photo 
+                            ? `<img src="${item.photo}" alt="${item.name}">` 
+                            : '📦'
+                        }
+                    </div>
+                    <div class="item-content">
+                        <div class="item-id">ID: ${item.id}</div>
+                        <div class="item-title">${escapeHtml(item.name)}</div>
+                        <div class="item-description">${escapeHtml(item.description || 'Без опису')}</div>
+                        <div class="item-details">
+                            <div class="item-price">${parseFloat(item.price).toFixed(2)} грн</div>
+                            <div class="item-quantity">📦 ${item.quantity} шт</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-small" onclick="editItem(${item.id})">✏️ Редагувати</button>
+                            <button class="btn btn-small btn-delete" onclick="deleteItem(${item.id}, '${escapeHtml(item.name)}')">🗑️ Видалити</button>
+                        </div>
+                        <div class="item-dates">
+                            Створено: ${new Date(item.created_at).toLocaleDateString('uk-UA')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(items) {
+            document.getElementById('itemCount').textContent = items.length;
+            
+            const totalValue = items.reduce((sum, item) => 
+                sum + (parseFloat(item.price) * parseInt(item.quantity)), 0
+            );
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2);
+        }
+
+        async function deleteItem(id, name) {
+            if (!confirm(`Ви впевнені, що хочете видалити "${name}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/inventory/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete item');
+
+                alert('Товар успішно видалено!');
+                loadAllItems();
+            } catch (error) {
+                alert('Помилка видалення: ' + error.message);
+            }
+        }
+
+        function editItem(id) {
+            const newName = prompt('Введіть нову назву товару:');
+            if (!newName) return;
+
+            const newDescription = prompt('Введіть новий опис:');
+            const newQuantity = prompt('Введіть нову кількість:');
+            const newPrice = prompt('Введіть нову ціну:');
+
+            const updateData = {};
+            if (newName) updateData.name = newName;
+            if (newDescription) updateData.description = newDescription;
+            if (newQuantity) updateData.quantity = parseInt(newQuantity);
+            if (newPrice) updateData.price = parseFloat(newPrice);
+
+            fetch(`/inventory/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Товар успішно оновлено!');
+                loadAllItems();
+            })
+            .catch(error => {
+                alert('Помилка оновлення: ' + error.message);
+            });
+        }
+
+        function showError(message) {
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">⚠️</div>
+                    <h2>Помилка</h2>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

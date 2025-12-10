@@ -1,0 +1,9 @@
+{
+  "watch": ["main.js", "public"],
+  "ext": "js,json,html,css",
+  "ignore": ["uploads"],
+  "exec": "node --inspect=0.0.0.0:9229 main.js",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
